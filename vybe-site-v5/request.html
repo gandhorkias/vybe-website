@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request an Entertainer — VYBE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <span class="vmark">V</span>
+      <span class="btext"><b>VYBE</b><span>BOOK THE MOMENT</span></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="index.html#browse">Browse Entertainers</a>
+      <a href="index.html#how">How It Works</a>
+      <a href="discover.html">For Clients</a>
+      <a href="about.html#entertainers">For Entertainers</a>
+      <a href="about.html">About Us</a>
+    </div>
+    <div class="nav-actions">
+      <a href="favorites.html" class="fav-link">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></span>
+        <span>Favorites</span>
+      </a>
+      <a href="auth.html" id="authBtn" class="btn btn-grad btn-sm">Sign In / Sign Up</a>
+    </div>
+    <button class="burger" id="burger">☰</button>
+  </div>
+</nav>
+
+<section class="request-hero">
+  <div class="wrap">
+    <span class="eyebrow">Can't Find It?</span>
+    <h1 style="margin-top:14px;">Tell us what you're looking for.<span class="grad-text">We'll try to source it.</span></h1>
+    <p>Not seeing the exact act you need on VYBE yet? Describe your event and we'll do our best to find or connect you with the right entertainer — drag performers, fire acts, stilt walkers, tribute acts, or anything else.</p>
+  </div>
+</section>
+
+<section class="request-form-wrap">
+  <div class="wrap">
+
+    <div id="requestFormView">
+      <form class="request-form" id="requestForm">
+        <div class="afield" style="margin-bottom:14px;">
+          <label>What are you looking for?</label>
+          <input type="text" name="looking" placeholder="e.g. A drag performer for a hen do" required>
+        </div>
+        <div class="row2" style="margin-bottom:14px;">
+          <div class="afield">
+            <label>Event type</label>
+            <select name="eventType" required>
+              <option value="">Select an event type</option>
+              <option>Wedding</option>
+              <option>Christening</option>
+              <option>Birthday</option>
+              <option>Private Party</option>
+              <option>Corporate Event</option>
+              <option>Shop Opening</option>
+              <option>Brand Launch</option>
+              <option>Christmas Party</option>
+              <option>Engagement</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="afield">
+            <label>Event date</label>
+            <input type="date" name="eventDate">
+          </div>
+        </div>
+        <div class="row2" style="margin-bottom:14px;">
+          <div class="afield">
+            <label>Location</label>
+            <input type="text" name="location" placeholder="e.g. Manchester" required>
+          </div>
+          <div class="afield">
+            <label>Budget</label>
+            <select name="budget">
+              <option value="">Any budget</option>
+              <option>Under £250</option>
+              <option>£250 – £500</option>
+              <option>£500 – £1,000</option>
+              <option>£1,000+</option>
+            </select>
+          </div>
+        </div>
+        <div class="afield" style="margin-bottom:14px;">
+          <label>Tell us more</label>
+          <textarea name="details" placeholder="Number of guests, timings, theme — anything that helps us find the right fit."></textarea>
+        </div>
+        <div class="afield" style="margin-bottom:20px;">
+          <label>Your email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="err" id="reqErr" style="display:none;font-size:12px;color:#B23A48;margin-bottom:14px;">Please fill in what you're looking for, location and email.</div>
+        <button type="submit" class="btn btn-grad btn-block">Send Request</button>
+        <p class="demo-note">Demo prototype — requests aren't sent anywhere yet, but this is exactly how it will work.</p>
+      </form>
+    </div>
+
+    <div id="requestConfirmView" style="display:none;">
+      <div class="request-form auth-confirm">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>Request received.</h3>
+        <p id="requestConfirmText">We'll be in touch to help you find the right act.</p>
+        <a href="index.html#browse" class="btn btn-grad">Browse Entertainers Meanwhile</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>VYBE — BOOK THE MOMENT.</span>
+      <span>© 2026 VYBE. Concept prototype — not a live marketplace.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const requestForm = document.getElementById('requestForm');
+requestForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const f = new FormData(requestForm);
+  const looking = (f.get('looking') || '').trim();
+  const location = (f.get('location') || '').trim();
+  const email = (f.get('email') || '').trim();
+  if(!requestForm.checkValidity() || !looking || !location || !email){
+    document.getElementById('reqErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('requestConfirmText').textContent =
+    `We'll be in touch at ${email} to help you find "${looking}"${location ? ' in ' + location : ''}.`;
+  document.getElementById('requestFormView').style.display = 'none';
+  document.getElementById('requestConfirmView').style.display = 'block';
+});
+</script>
+</body>
+</html>
