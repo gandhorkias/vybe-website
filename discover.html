@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover — VYBE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>body{overflow:hidden;}</style>
+</head>
+<body>
+
+<div class="discover-shell">
+  <div class="dprogress" id="dProgress"></div>
+
+  <div class="discover-filters">
+    <select id="fLocation"><option value="">All Locations</option></select>
+    <select id="fType"><option value="">Entertainment Type</option></select>
+    <select id="fEvent"><option value="">Event Type</option></select>
+    <select id="fBudget"><option value="">Any Budget</option><option>£</option><option>££</option><option>£££</option><option>££££</option></select>
+    <a href="index.html" style="align-self:center;color:#fff;font-size:12.5px;text-decoration:underline;margin-left:8px;">Exit</a>
+  </div>
+
+  <div class="dstage" id="dStage"></div>
+
+  <div class="dnav">
+    <button id="dUp" aria-label="Previous">↑</button>
+    <button id="dDown" aria-label="Next">↓</button>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const allUnique = PERFORMERS.filter(p => p.slug !== 'jayden-cruz-encore');
+
+// populate filter dropdowns from data
+const locSel = document.getElementById('fLocation');
+const typeSel = document.getElementById('fType');
+const eventSel = document.getElementById('fEvent');
+[...new Set(allUnique.map(p=>p.city))].sort().forEach(c=>{
+  locSel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`);
+});
+[...new Set(allUnique.map(p=>p.category))].sort().forEach(c=>{
+  typeSel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`);
+});
+[...new Set(allUnique.flatMap(p=>p.eventTypes))].sort().forEach(c=>{
+  eventSel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`);
+});
+
+const stage = document.getElementById('dStage');
+const progress = document.getElementById('dProgress');
+let list = allUnique.slice();
+let idx = 0;
+
+function slideHtml(p){
+  const liked = isFavorite(p.slug);
+  return `
+    <img src="${p.image}" alt="${p.name}">
+    <div class="veil"></div>
+    <div class="dside">
+      <div class="dic like ${liked?'liked':''}" data-slug="${p.slug}" style="${liked?('background:'+'var(--grad)'):''}">♥</div><span>2.3K</span>
+      <div class="dic">💬</div><span>156</span>
+      <div class="dic">🔖</div><span>892</span>
+      <div class="dic">↗</div><span>246</span>
+    </div>
+    <div class="dinfo">
+      <div class="dname">${p.name} <span style="width:18px;height:18px;border-radius:50%;background:var(--grad);display:inline-flex;align-items:center;justify-content:center;font-size:10px;">✓</span></div>
+      <div class="dcat">${p.category} · ${p.city}</div>
+      <div class="ptags" style="margin-bottom:16px;">${p.tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
+      <div class="dctas">
+        <a href="entertainer.html?slug=${p.slug}" class="btn btn-white btn-sm">View Profile</a>
+        <a href="entertainer.html?slug=${p.slug}" class="btn btn-line btn-sm">Check Availability</a>
+      </div>
+    </div>
+  `;
+}
+
+function buildSlides(){
+  stage.innerHTML = '';
+  progress.innerHTML = '';
+  list.forEach((p,i)=>{
+    const el = document.createElement('div');
+    el.className = 'dslide' + (i===idx ? ' active' : '');
+    el.innerHTML = slideHtml(p);
+    el.querySelector('.dic.like').addEventListener('click', (e)=>{
+      const liked = toggleFavorite(p.slug);
+      e.currentTarget.classList.toggle('liked', liked);
+      e.currentTarget.style.background = liked ? 'var(--grad)' : '';
+    });
+    stage.appendChild(el);
+
+    const seg = document.createElement('div');
+    if(i <= idx) seg.classList.add('done');
+    progress.appendChild(seg);
+  });
+}
+
+function updateActive(){
+  [...stage.children].forEach((el,i)=> el.classList.toggle('active', i===idx));
+  [...progress.children].forEach((el,i)=> el.classList.toggle('done', i<=idx));
+}
+
+function applyFilters(){
+  list = allUnique.filter(p=>{
+    if(locSel.value && p.city !== locSel.value) return false;
+    if(typeSel.value && p.category !== typeSel.value) return false;
+    if(eventSel.value && !p.eventTypes.includes(eventSel.value)) return false;
+    return true;
+  });
+  if(list.length === 0) list = allUnique.slice();
+  idx = 0;
+  buildSlides();
+}
+[locSel, typeSel, eventSel, document.getElementById('fBudget')].forEach(s=>{
+  s.addEventListener('change', applyFilters);
+});
+
+function go(delta){
+  idx = Math.max(0, Math.min(list.length - 1, idx + delta));
+  updateActive();
+}
+document.getElementById('dUp').addEventListener('click', ()=>go(-1));
+document.getElementById('dDown').addEventListener('click', ()=>go(1));
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowUp'){ go(-1); }
+  if(e.key === 'ArrowDown'){ go(1); }
+});
+
+let wheelLocked = false;
+document.querySelector('.discover-shell').addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  if(wheelLocked) return;
+  wheelLocked = true;
+  go(e.deltaY > 0 ? 1 : -1);
+  setTimeout(()=> wheelLocked = false, 500);
+}, {passive:false});
+
+let touchStartY = null;
+document.querySelector('.discover-shell').addEventListener('touchstart', (e)=>{
+  touchStartY = e.touches[0].clientY;
+});
+document.querySelector('.discover-shell').addEventListener('touchend', (e)=>{
+  if(touchStartY === null) return;
+  const dy = touchStartY - e.changedTouches[0].clientY;
+  if(Math.abs(dy) > 50) go(dy > 0 ? 1 : -1);
+  touchStartY = null;
+});
+
+buildSlides();
+</script>
+</body>
+</html>
