@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favorites — VYBE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <span class="vmark">V</span>
+      <span class="btext"><b>VYBE</b><span>BOOK THE MOMENT</span></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="index.html#browse">Browse Entertainers</a>
+      <a href="index.html#how">How It Works</a>
+      <a href="discover.html">For Clients</a>
+      <a href="about.html#entertainers">For Entertainers</a>
+      <a href="about.html">About Us</a>
+    </div>
+    <div class="nav-actions">
+      <a href="favorites.html" class="fav-link active">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></span>
+        <span>Favorites</span>
+      </a>
+      <a href="auth.html" id="authBtn" class="btn btn-grad btn-sm">Sign In / Sign Up</a>
+    </div>
+    <button class="burger" id="burger">☰</button>
+  </div>
+</nav>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Your Favorites</h2>
+      <a href="index.html#browse" class="viewall">Browse more</a>
+    </div>
+    <div class="ent-grid reveal in-view" id="favGrid"></div>
+    <p id="emptyMsg" style="display:none;color:var(--grey);font-size:14.5px;">You haven't saved any entertainers yet. Tap the heart on a profile or card to save it here.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>VYBE — BOOK THE MOMENT.</span>
+      <span>© 2026 VYBE. Concept prototype — not a live marketplace.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+function cardHtml(p){
+  return `<a href="entertainer.html?slug=${p.slug}" class="ent-card">
+    <img src="${p.image}" alt="${p.name}">
+    <div class="veil"></div>
+    <button class="fav-btn active" onclick="event.preventDefault();event.stopPropagation();toggleFavorite('${p.slug}');this.closest('.ent-card').remove();checkEmpty();"><span class="icon">${ICONS.heartFill}</span></button>
+    <div class="ecinfo">
+      <div class="eloc"><span class="icon">${ICONS.pin}</span>${p.city}</div>
+      <div class="ename">${p.name}</div>
+      <div class="ecat">${p.category}</div>
+      <div class="eview">View Profile <span class="icon">${ICONS.arrow}</span></div>
+    </div>
+  </a>`;
+}
+function checkEmpty(){
+  document.getElementById('emptyMsg').style.display = document.getElementById('favGrid').children.length ? 'none' : 'block';
+}
+const favs = getFavorites();
+const favPerformers = PERFORMERS.filter(p => favs.includes(p.slug));
+document.getElementById('favGrid').innerHTML = favPerformers.map(cardHtml).join('');
+checkEmpty();
+</script>
+</body>
+</html>
